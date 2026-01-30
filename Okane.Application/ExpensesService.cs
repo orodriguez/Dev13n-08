@@ -12,8 +12,8 @@ public class ExpensesService(
                 $"{nameof(request.Amount)} must be greater than 1.");
 
         var category = categories.ByName(request.CategoryName);
-        
         var expense = Expense(request, category);
+        category.Expenses.Add(expense);
         expenses.Add(expense);
 
         var response = expenseResponseFactory.Create(expense);
@@ -52,6 +52,10 @@ public class ExpensesService(
                 $"Expense with id {id} was not found.");
 
         var category =  categories.ByName(request.CategoryName);
+        if (category is null)
+            return new ErrorResult<ExpenseResponse>(
+                $"Category name 'Unknown' not found.");
+        
         var updated = expenses.Update(id, request, category);
 
         var response = expenseResponseFactory.Create(updated);
