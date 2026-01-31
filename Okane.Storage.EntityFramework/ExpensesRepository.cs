@@ -40,4 +40,8 @@ public class ExpensesRepository(OkaneDbContext db) : IExpensesRepository
         db.SaveChanges();
         return existing;
     }
+    public bool AnyByCategoryId(int categoryId)
+    {
+        return db.Expenses.Any(e => e.Category.Id == categoryId);
+    }
 }

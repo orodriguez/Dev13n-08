@@ -10,8 +10,9 @@ public class CategoriesServiceTests
     public CategoriesServiceTests()
     {
         var categoriesRepository = new InMemoryCategoriesRepository();
-        _service = new CategoriesService(categoriesRepository);
-        _expensesService = new ExpensesService(new InMemoryExpensesRepository(), categoriesRepository,
+        var expensesRepository = new InMemoryExpensesRepository();
+        _service = new CategoriesService(categoriesRepository, expensesRepository);
+        _expensesService = new ExpensesService(expensesRepository, categoriesRepository,
             new ExpenseResponseFactory());
     }
     
@@ -27,9 +28,11 @@ public class CategoriesServiceTests
     [Fact]
     public void Create_CategoryAlreadyExists()
     {
+        
         _service.Create(new CreateCategoryRequest("Food")).AssertOk();
         
         var error = _service.Create(new CreateCategoryRequest("Food")).AssertError();
+        
 
         Assert.Equal("Category already exists", error);
     }
@@ -74,7 +77,7 @@ public class CategoriesServiceTests
         var error = _service.Update(created.Id, 
             new UpdateCategoryRequest("Taxes")).AssertError();
         
-        Assert.Equal("Category already exists", error);
+        Assert.Equal("Category already exists.", error);
     }
     
     [Fact]

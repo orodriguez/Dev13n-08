@@ -29,5 +29,16 @@ namespace Okane.Storage.EntityFramework
 
         public Category ByName(string name) => 
             db.Categories.First(category => category.Name == name);
+        
+        public Category Update(int id, UpdateCategoryRequest request)
+        {
+            var existing = db.Categories.First(category => category.Id == id);
+
+            existing.Name = request.Name;
+            
+            db.SaveChanges();
+            return existing;
+        }
     }
+    
 }
