@@ -8,6 +8,7 @@ public class InMemoryExpensesRepository : InMemoryRepository<Expense>, IExpenses
         
         existing.Amount = request.Amount;
         existing.Category = category;
+        existing.CategoryId = category.Id;
 
         return existing;
     }
