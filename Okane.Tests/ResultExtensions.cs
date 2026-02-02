@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using Okane.Application;
 
 namespace Okane.Tests;
@@ -40,5 +41,11 @@ public static class ResultExtensions
     {
         var unauthorizedResult = Assert.IsType<UnauthorizedResult<T>>(result);
         return unauthorizedResult.Message;
+    }
+
+    public static string AssertBadRequest<T>(this Result<T> result)
+    {
+        var errorResult = Assert.IsType<ErrorResult<T>>(result);
+        return errorResult.Message;
     }
 }
