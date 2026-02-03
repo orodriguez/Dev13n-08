@@ -2,38 +2,28 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Okane.Application;
 
-public class InMemoryRepository<T> : IRepository<Expense>
+public abstract class InMemoryRepository<T> : IRepository<T> where T : IEntity
 {
     private int _lastId;
-    private readonly List<Expense> _entities = [];
+    protected readonly List<T> Entities = [];
 
-    public void Add(Expense entity)
+    public void Add(T entity)
     {
         entity.Id = ++_lastId;
-        _entities.Add(entity);
+        Entities.Add(entity);
     }
 
-    public Expense? ById(int id) => 
-        _entities.FirstOrDefault(x => x.Id == id);
+    public T? ById(int id) => 
+        Entities.FirstOrDefault(x => x.Id == id);
 
-    public IEnumerable<Expense> All() => _entities;
+    public IEnumerable<T> All() => Entities;
 
     public void Remove(int id)
     {
-        var existing = _entities.First(x => x.Id == id);
-        _entities.Remove(existing);
+        var existing = Entities.First(x => x.Id == id);
+        Entities.Remove(existing);
     }
 
     public bool Exists(int id) => 
-        _entities.Any(x => x.Id == id);
-
-    public Expense Update(int id, UpdateExpenseRequest request)
-    {
-        var existing = _entities.First(e => e.Id == id);
-        
-        existing.Amount = request.Amount;
-        existing.CategoryName = request.CategoryName;
-
-        return existing;
-    }
+        Entities.Any(x => x.Id == id);
 }

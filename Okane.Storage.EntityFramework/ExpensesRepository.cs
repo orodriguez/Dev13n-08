@@ -1,8 +1,9 @@
+using Microsoft.EntityFrameworkCore;
 using Okane.Application;
 
 namespace Okane.Storage.EntityFramework;
 
-public class ExpensesRepository(OkaneDbContext db) : IRepository<Expense>
+public class ExpensesRepository(OkaneDbContext db) : IExpensesRepository
 {
     public void Add(Expense entity)
     {
@@ -11,9 +12,13 @@ public class ExpensesRepository(OkaneDbContext db) : IRepository<Expense>
     }
 
     public Expense? ById(int id) => 
-        db.Expenses.FirstOrDefault(x => x.Id == id);
+        db.Expenses
+            .Include(expense => expense.Category)
+            .FirstOrDefault(x => x.Id == id);
 
-    public IEnumerable<Expense> All() => db.Expenses;
+    public IEnumerable<Expense> All() =>
+        db.Expenses
+            .Include(expense => expense.Category);
 
     public void Remove(int id)
     {
@@ -25,12 +30,12 @@ public class ExpensesRepository(OkaneDbContext db) : IRepository<Expense>
     public bool Exists(int id) => 
         db.Expenses.Any(x => x.Id == id);
 
-    public Expense Update(int id, UpdateExpenseRequest request)
+    public Expense Update(int id, UpdateExpenseRequest request, Category category)
     {
         var existing = db.Expenses.First(expense => expense.Id == id);
 
         existing.Amount = request.Amount;
-        existing.CategoryName = request.CategoryName;
+        existing.Category = category;
 
         db.SaveChanges();
         return existing;
